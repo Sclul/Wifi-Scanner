@@ -4,9 +4,10 @@ services:
     ports:
       - 8050:8050
     volumes:
-      - /home/jonas/project/data/data.csv:/app/track_points.csv:ro #set path of folder data
+      - /home/jonas/project/Wifi-Scanner/data/dataTest.csv:/app/track_points.csv:ro #set path of folder data
     environment:
-      -  SSID=2Girls1Router #routername to visu
+      #-  SSID=2Girls1Router #routername to visu
+      - SSID=_Free_Wifi_Berlin
 
 
   scanner:
@@ -30,7 +31,7 @@ volumes:
   data:
     driver_opts:
         type: none
-        device: /home/jonas/project/data #set path of folder data
+        device: /home/jonas/project/Wifi-Scanner/data #set path of folder data
         o: bind
 
 
