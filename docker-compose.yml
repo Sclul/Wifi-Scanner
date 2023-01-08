@@ -4,10 +4,10 @@ services:
     ports:
       - 8050:8050
     volumes:
-      - /home/jonas/project/Wifi-Scanner/data/dataTest.csv:/app/track_points.csv:ro #set path of folder data
+      - /home/jonas/project/Wifi-Scanner/data/data.csv:/app/track_points.csv:ro #set path of folder data
     environment:
-      #-  SSID=2Girls1Router #routername to visu
-      - SSID=_Free_Wifi_Berlin
+      -  SSID=2Girls1Router #routername to visu
+      #- SSID=_Free_Wifi_Berlin
 
 
   scanner:
