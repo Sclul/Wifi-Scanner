@@ -4,9 +4,9 @@ services:
     ports:
       - 8050:8050
     volumes:
-      - /home/jonas/project/data/data.csv:/app/track_points.csv:ro #set path of folder data
+      - /home/nuc/wifi-scanner/data/data.csv:/app/track_points.csv:ro #set path of folder data
     environment:
-      -  SSID=2Girls1Router #routername to visu
+      -  SSID=eduroam #routername to visu
 
 
   scanner:
@@ -18,20 +18,21 @@ services:
     tty: true   
     network_mode: "host"
     environment:
-      -  WIFI_INTERFACE_NAME=wlx503eaad2a0b0 #set interface name. ip a
+      -  WIFI_INTERFACE_NAME=wlx60e327070396 #set interface name. ip a
     volumes:
-      - data:/app/data/
-    restart: always
+      # - data:/app/data/
+      - /home/nuc/wifi-scanner/data/data.csv:/app/data/data.csv:rw
+    # restart: always
 
 
 
 
-volumes:
-  data:
-    driver_opts:
-        type: none
-        device: /home/jonas/project/data #set path of folder data
-        o: bind
+# volumes:
+#   data:
+#     driver_opts:
+#         type: none
+#         device: /home/nuc/wifi-scanner/data #set path of folder data
+#         o: bind
 
 
       # Dropdown menu for ssid
