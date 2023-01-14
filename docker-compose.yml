@@ -4,11 +4,11 @@ services:
     ports:
       - 8050:8050
     volumes:
-      - /home/jonas/project/Wifi-Scanner/data/data.csv:/app/track_points.csv:ro #set path of folder data
+      - /home/jonas/project/Wifi-Scanner/data/dataTest2.csv:/app/track_points.csv:ro #set path of folder data
     environment:
-      -  SSID=2Girls1Router #routername to visu
-      #- SSID=_Free_Wifi_Berlin
-
+      #-  SSID=2Girls1Router #routername to visu
+      - SSID=eduroam
+    stop_grace_period: 1s
 
   scanner:
     container_name: scanner
@@ -23,6 +23,7 @@ services:
     volumes:
       - data:/app/data/
     restart: always
+    stop_grace_period: 1s
 
 
 
