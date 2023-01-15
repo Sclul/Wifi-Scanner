@@ -8,6 +8,7 @@ import pandas as pd
 
 
 app = Dash(__name__)
+app.config.suppress_callback_exceptions=True
 
 points = pd.read_csv('/app/track_points.csv')
 fig = go.Figure(go.Densitymapbox(lat=points.lat, lon=points.lon, z=points.strength,radius=10))
@@ -16,36 +17,105 @@ fig.update_layout(mapbox_style="open-street-map", mapbox_center_lat=52.5156451, 
 fig.update_layout(height=1000 ,margin={"r":0,"t":0,"l":0,"b":0})
 
 app.layout = html.Div([
-    html.Div([
-        html.Div([
-            dcc.Dropdown(
-                points['ssid'].unique(),
-                'eduroam',
-                id='ssid-menu'
-            
-            )
-            
-        ], style={'width': '90%', 'display': 'inline-block'}),
-        html.Div([
-            html.Button(id='update-button-state', n_clicks=0, children='Update', style={'font-size': '24px'}),
-
-            
-        ], style={'width': '100px', 'float': 'right', 'display': 'inline-block'})
-
-    ]),
-
-        
-    dcc.Graph(
-        id='heatmap'
-  
-    )
+    dcc.Tabs(
+        id="tabs-with-classes",
+        value='tab-1',
+        parent_className='custom-tabs',
+        className='custom-tabs-container',
+        children=[
+            dcc.Tab(
+                label='SSID-Stats',
+                value='tab-1',
+                className='custom-tab',
+                selected_className='custom-tab--selected'
+            ),
+            dcc.Tab(
+                label='Tab two',
+                value='tab-2',
+                className='custom-tab',
+                selected_className='custom-tab--selected'
+            ),
+        ]),
+    html.Div(id='tabs-content-classes')
 ])
 
+
+@app.callback(Output('tabs-content-classes', 'children'),
+              Input('tabs-with-classes', 'value'))
+def render_content(tab):
+    if tab == 'tab-1':
+        return html.Div([
+                    html.Div([
+                        html.Div([
+                            dcc.Dropdown(
+                                points['ssid'].unique(),
+                                'eduroam',
+                                id='ssid-menu'
+                            
+                            )
+                            
+                        ], style={'width': '90%', 'display': 'inline-block'}),
+                        html.Div([
+                            html.Button(id='update-button-state', n_clicks=0, children='Update', style={'font-size': '24px'}),
+
+                            
+                        ], style={'width': '100px', 'float': 'right', 'display': 'inline-block'})
+
+                    ]),
+
+                        
+                    dcc.Graph(
+                        id='ssid-heatmap'
+                
+                    ),
+
+
+
+                    html.Div([
+                            html.Div([
+                                dcc.Graph(
+                                    id='channel-bar'
+                                )
+                            ], style={'width': '50%', 'display': 'inline-block'}),
+                            html.Div([
+                                dcc.Graph(
+                                    id='signal-bar'
+                                )                                
+                            ], style={'width': '50%', 'float': 'right', 'display': 'inline-block'})
+
+                        ])
+                ])
+
+    elif tab == 'tab-2':
+        return html.Div([
+                    html.H3('Tab content 2')
+ 
+
+
+
+                ])
+
+
+
+
+
+
+
+
+
+
+#Updates SSID-Menu. The return must be a list and no dataframe
+@app.callback(
+    Output('ssid-menu', 'options'),
+    Input('update-button-state', 'n_clicks'))
+def update_ssid_menu(n_clicks):
+    data = pd.read_csv('/app/track_points.csv')
+    return data['ssid'].unique().tolist()
 
 
 #Update heatmap
 @app.callback(
-    Output('heatmap', 'figure'),
+    Output('ssid-heatmap', 'figure'),
     Input('ssid-menu', 'value'))
 def update_figure(selected_ssid):
     points = pd.read_csv('/app/track_points.csv')
@@ -57,14 +127,27 @@ def update_figure(selected_ssid):
 
     return fig
 
-#Updates SSID-Menu. The return must be a list and no dataframe
+#Update Channel barchart
 @app.callback(
-    Output('ssid-menu', 'options'),
-    Input('update-button-state', 'n_clicks'))
-def update_ssid_menu(n_clicks):
-    data = pd.read_csv('/app/track_points.csv')
-    return data['ssid'].unique().tolist()
+    Output('channel-bar', 'figure'),
+    Input('ssid-menu', 'value'))
+def update_figure(selected_ssid):
+    points = pd.read_csv('/app/track_points.csv')
+    filtered_points = points.drop(points[points.ssid != selected_ssid].index)
+    fig = go.Figure(data=go.Bar(y=filtered_points.groupby('channel')['channel'].count(), x=sorted(filtered_points['channel'].unique()), width=0.8))
+    fig.update_layout(title_text='Channel')
+    return fig
 
+#Update Signal barchart
+@app.callback(
+    Output('signal-bar', 'figure'),
+    Input('ssid-menu', 'value'))
+def update_figure(selected_ssid):
+    points = pd.read_csv('/app/track_points.csv')
+    filtered_points = points.drop(points[points.ssid != selected_ssid].index)
+    fig = go.Figure(data=go.Bar(y=filtered_points.groupby('strength')['strength'].count(), x=sorted(filtered_points['strength'].unique()), width=0.8))
+    fig.update_layout(title_text='Signal Strength')
+    return fig
 
 
 if __name__ == '__main__':
@@ -72,6 +155,5 @@ if __name__ == '__main__':
 
 
 #TODO
-#Impement Update Toggle by turning n_intervals on and off
 #Make tabs to switch between map and plots
 #Implement plots

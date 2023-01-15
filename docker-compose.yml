@@ -47,5 +47,5 @@ volumes:
         o: bind
 
 
-      # Dropdown menu for ssid
+
       # Bar chart for channels and strength
