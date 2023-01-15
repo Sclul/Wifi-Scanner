@@ -1,14 +1,25 @@
 services:
-  visu:
-    build: ./visu
+  visu_live:
+    build: ./visu/live
     ports:
       - 8050:8050
     volumes:
       - /home/jonas/project/Wifi-Scanner/data/dataTest2.csv:/app/track_points.csv:rw #set path of folder data
-    environment:
-      #-  SSID=2Girls1Router #routername to visu
-      - SSID=eduroam
     stop_grace_period: 1s
+    labels:
+      - 'live'
+
+  visu_toggle:
+    build: ./visu/toggle
+    ports:
+      - 8050:8050
+    volumes:
+      - /home/jonas/project/Wifi-Scanner/data/dataTest2.csv:/app/track_points.csv:rw #set path of folder data
+    stop_grace_period: 1s
+    labels:
+      - 'toggle'
+
+
 
   scanner:
     container_name: scanner
