@@ -29,7 +29,7 @@ app.layout = html.Div([
                 selected_className='custom-tab--selected'
             ),
             dcc.Tab(
-                label='Tab two',
+                label='AP-Stats',
                 value='tab-2',
                 className='custom-tab',
                 selected_className='custom-tab--selected'
@@ -55,21 +55,15 @@ def render_content(tab):
                                 points['ssid'].unique(),
                                 'eduroam',
                                 id='ssid-menu'
-                            
                             )
-                            
-                        ], style={'width': '100%', 'display': 'inline-block'})
-
+                        ], style={'width': '90%', 'display': 'inline-block'}),
+                        html.Div([
+                            html.Button(id='update-button-state', n_clicks=0, children='Update', style={'font-size': '24px'}),
+                        ], style={'width': '100px', 'float': 'right', 'display': 'inline-block'})
                     ]),
-
-                        
                     dcc.Graph(
                         id='ssid-heatmap'
-                
                     ),
-
-
-
                     html.Div([
                             html.Div([
                                 dcc.Graph(
@@ -81,17 +75,21 @@ def render_content(tab):
                                     id='signal-bar'
                                 )                                
                             ], style={'width': '50%', 'float': 'right', 'display': 'inline-block'})
-
                         ])
                 ])
-
     elif tab == 'tab-2':
         return html.Div([
-                    html.H3('Tab content 2')
- 
-
-
-
+                    html.Div([
+                        html.Div([
+                            dcc.Dropdown(
+                                points['ip'].unique(),
+                                id='ip-menu'
+                            )
+                        ], style={'width': '90%', 'display': 'inline-block'}),
+                        html.Div([
+                            html.Button(id='update-button-state', n_clicks=0, children='Update', style={'font-size': '24px'}),
+                        ], style={'width': '100px', 'float': 'right', 'display': 'inline-block'})
+                    ])
                 ])
 
 
@@ -141,6 +139,13 @@ def update_figure(selected_ssid):
     fig.update_layout(title_text='Signal Strength')
     return fig
 
+#Update MAC-Menu
+@app.callback(
+    Output('ip-menu', 'options'),
+    Input('update-button-state', 'n_clicks'))
+def update_ip_menu(n_clicks):
+    data = pd.read_csv('/app/track_points.csv')
+    return data['ip'].unique().tolist()
 
 if __name__ == '__main__':
     app.run_server(host='0.0.0.0',debug=True, port=8050)
