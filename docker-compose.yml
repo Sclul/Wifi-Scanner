@@ -34,6 +34,3 @@ services:
 #         device: /home/nuc/wifi-scanner/data #set path of folder data
 #         o: bind
 
-
-      # Dropdown menu for ssid
-      # Bar chart for channels and strength
