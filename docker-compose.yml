@@ -58,5 +58,3 @@ volumes:
         o: bind
 
 
-
-      # Bar chart for channels and strength
