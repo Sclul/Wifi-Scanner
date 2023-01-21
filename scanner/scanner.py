@@ -14,20 +14,29 @@ wifiInterfaceName = os.environ["WIFI_INTERFACE_NAME"]
 outputArray = numpy.genfromtxt('/app/data/data.csv', delimiter=",", dtype="str")
 
 
+last_run_time = time.time()
+
+
 with GPSDClient() as client:
+
 
     for result in client.dict_stream(convert_datetime=True, filter=["TPV"]):
 
-    #Get all AP-Data
+        current_time = time.time() # Get the current time in seconds
+        # Calculate the time since the code last ran
+        delta_time = current_time - last_run_time
+        # Print the time since the code last ran
+        print("Time since code last ran: {:.2f} seconds".format(delta_time))
+        last_run_time = current_time
 
-        time.sleep(1)
+    #Get all AP-Data
 
         process = subprocess.run(["iwlist", wifiInterfaceName, "scan"],
                             check=True,
                             stdout=subprocess.PIPE,
                             universal_newlines=True)
 
-
+        print('process done')
     
 
 
@@ -40,7 +49,7 @@ with GPSDClient() as client:
             if "Cell" in data[x]:
                 apcells = apcells + 1
 
-        ap = numpy.ones((apcells, 7), dtype=object)
+        ap = numpy.ones((apcells, 10), dtype=object)
 
         timeStamp = int(time.time())
 
@@ -63,31 +72,17 @@ with GPSDClient() as client:
 
 
 
-
-
-
-        # with GPSDClient() as client:
-
-           
-            # # for result in client.dict_stream(convert_datetime=True, filter=["TPV"]):
-            # print("Latitude: %s" % result.get("lat", "n/a"))
-            # print("Longitude: %s" % result.get("lon", "n/a"))
-
-
-
-
-
-            # #Temp GPS
-            # ################################
-            
-            # lat = 52.513 + random.random()*0.005
-            # lon = 13.323 + random.random()*0.008
-
             ap[apCellCounter, 5] = result.get("lat", "n/a")
             ap[apCellCounter, 6] = result.get("lon", "n/a")
+            ap[apCellCounter, 7] = result.get("epx", "n/a")
+            ap[apCellCounter, 8] = result.get("epy", "n/a")            
         
-            #################################
 
+            if "Last beacon:" in data[x]:
+                ap[apCellCounter, 9] = ((data[x])[40:].replace("ms ago",""))
+
+
+        print('array done')
 
 
         outputArray=numpy.vstack([outputArray, ap]) #super inefficient

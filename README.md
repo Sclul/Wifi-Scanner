@@ -14,5 +14,6 @@ filtered_points['strength'] = filtered_points['strength'].apply(lambda x: (math.
 
 ##  Starting GNSS
 1. sudo apt install gpsd
-2. lsusb (look for Prolific Technology, Inc)
-3. 
+2. sudo su
+3. sudo systemctl stop gpsd.socket 
+4. gpsd -D 5 -N -n /dev/ttyUSB0

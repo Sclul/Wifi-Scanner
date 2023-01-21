@@ -4,7 +4,7 @@ services:
     ports:
       - 8050:8050
     volumes:
-      - /home/jonas/project/Wifi-Scanner/data/dataTest2.csv:/app/track_points.csv:rw #set path of folder data
+      - /home/jonas/project/Wifi-Scanner/data/data.csv:/app/track_points.csv:rw #set path of folder data
     stop_grace_period: 1s
     labels:
       - 'live'
@@ -14,7 +14,7 @@ services:
     ports:
       - 8050:8050
     volumes:
-      - /home/jonas/project/Wifi-Scanner/data/dataTest2.csv:/app/track_points.csv:rw #set path of folder data
+      - /home/jonas/project/Wifi-Scanner/data/data.csv:/app/track_points.csv:rw #set path of folder data
     stop_grace_period: 1s
     labels:
       - 'toggle'
@@ -41,7 +41,7 @@ services:
     tty: true   
     network_mode: "host"
     environment:
-      -  WIFI_INTERFACE_NAME=wlx60e327070396 #set interface name. ip a
+      -  WIFI_INTERFACE_NAME=wlx503eaad2a0b0 #set interface name. ip a
     volumes:
       - data:/app/data/
     restart: always
