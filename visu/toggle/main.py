@@ -69,6 +69,18 @@ def render_content(tab):
                                     id='signal-bar'
                                 )                                
                             ], style={'width': '50%', 'float': 'right', 'display': 'inline-block'})
+                        ]),
+                    html.Div([
+                            html.Div([
+                                dcc.Graph(
+                                    id='elat-bar'
+                                )
+                            ], style={'width': '50%', 'display': 'inline-block'}),
+                            html.Div([
+                                dcc.Graph(
+                                    id='elon-bar'
+                                )                                
+                            ], style={'width': '50%', 'float': 'right', 'display': 'inline-block'})
                         ])
                 ])
     elif tab == 'tab-2':
@@ -138,6 +150,28 @@ def update_figure(selected_ssid):
     filtered_points = points.drop(points[points.ssid != selected_ssid].index)
     fig = go.Figure(data=go.Bar(y=filtered_points.groupby('strength')['strength'].count(), x=sorted(filtered_points['strength'].unique()), width=0.8))
     fig.update_layout(title_text='Signal Strength')
+    return fig
+
+#Update ELAT barchart
+@app.callback(
+    Output('elat-bar', 'figure'),
+    Input('ssid-menu', 'value'))
+def update_figure(selected_ssid):
+    points = pd.read_csv('/app/track_points.csv')
+    filtered_points = points.drop(points[points.ssid != selected_ssid].index)
+    fig = go.Figure(data=go.Bar(y=filtered_points.groupby('elat')['elat'].count(), x=sorted(filtered_points['elat'].unique()), width=0.8))
+    fig.update_layout(title_text='Error Latitude')
+    return fig
+
+#Update ELON barchart
+@app.callback(
+    Output('elon-bar', 'figure'),
+    Input('ssid-menu', 'value'))
+def update_figure(selected_ssid):
+    points = pd.read_csv('/app/track_points.csv')
+    filtered_points = points.drop(points[points.ssid != selected_ssid].index)
+    fig = go.Figure(data=go.Bar(y=filtered_points.groupby('elon')['elon'].count(), x=sorted(filtered_points['elon'].unique()), width=0.8))
+    fig.update_layout(title_text='Error Longitude')
     return fig
 
 #Update MAC-Menu

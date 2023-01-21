@@ -79,12 +79,15 @@ with GPSDClient() as client:
         
 
             if "Last beacon:" in data[x]:
-                ap[apCellCounter, 9] = ((data[x])[40:].replace("ms ago",""))
+                ap[apCellCounter, 9] = int((data[x])[40:].replace("ms ago",""))
+
+            #Deletes every row, where the last beacon was sent more then the last iwlist scan ago
+            nap=ap[ap[:,9]< delta_time*1000]
 
 
-        print('array done')
 
 
-        outputArray=numpy.vstack([outputArray, ap]) #super inefficient
+        outputArray=numpy.vstack([outputArray, nap]) #super inefficient
+
 
         numpy.savetxt("/app/data/data.csv", outputArray, fmt='%1s', delimiter=",")
