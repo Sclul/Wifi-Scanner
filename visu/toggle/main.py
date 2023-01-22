@@ -5,13 +5,15 @@ import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd
 import math
-
+import sqlite3
 
 
 app = Dash(__name__)
 app.config.suppress_callback_exceptions=True
 
-points = pd.read_csv('/app/track_points.csv')
+conn = sqlite3.connect('data.db')
+points = pd.read_sql('SELECT * FROM data', conn) 
+conn.close()
 
 
 app.layout = html.Div([
@@ -112,7 +114,9 @@ def render_content(tab):
     Output('ssid-menu', 'options'),
     Input('update-button-state', 'n_clicks'))
 def update_ssid_menu(n_clicks):
-    data = pd.read_csv('/app/track_points.csv')
+    conn = sqlite3.connect('data.db')
+    data = pd.read_sql('SELECT * FROM data', conn) 
+    conn.close()
     return data['ssid'].unique().tolist()
 
 
@@ -121,7 +125,9 @@ def update_ssid_menu(n_clicks):
     Output('ssid-heatmap', 'figure'),
     Input('ssid-menu', 'value'))
 def update_figure(selected_ssid):
-    points = pd.read_csv('/app/track_points.csv')
+    conn = sqlite3.connect('data.db')
+    points = pd.read_sql('SELECT * FROM data', conn)
+    conn.close() 
     filtered_points = points.drop(points[points.ssid != selected_ssid].index)
     fig = go.Figure(go.Densitymapbox(lat=filtered_points.lat, lon=filtered_points.lon, z=filtered_points.strength,radius=10))
     fig.update_geos(fitbounds="locations")
@@ -135,7 +141,9 @@ def update_figure(selected_ssid):
     Output('channel-bar', 'figure'),
     Input('ssid-menu', 'value'))
 def update_figure(selected_ssid):
-    points = pd.read_csv('/app/track_points.csv')
+    conn = sqlite3.connect('data.db')
+    points = pd.read_sql('SELECT * FROM data', conn)
+    conn.close() 
     filtered_points = points.drop(points[points.ssid != selected_ssid].index)
     fig = go.Figure(data=go.Bar(y=filtered_points.groupby('channel')['channel'].count(), x=sorted(filtered_points['channel'].unique()), width=0.8))
     fig.update_layout(title_text='Channel')
@@ -146,7 +154,9 @@ def update_figure(selected_ssid):
     Output('signal-bar', 'figure'),
     Input('ssid-menu', 'value'))
 def update_figure(selected_ssid):
-    points = pd.read_csv('/app/track_points.csv')
+    conn = sqlite3.connect('data.db')
+    points = pd.read_sql('SELECT * FROM data', conn) 
+    conn.close()
     filtered_points = points.drop(points[points.ssid != selected_ssid].index)
     fig = go.Figure(data=go.Bar(y=filtered_points.groupby('strength')['strength'].count(), x=sorted(filtered_points['strength'].unique()), width=0.8))
     fig.update_layout(title_text='Signal Strength')
@@ -157,7 +167,9 @@ def update_figure(selected_ssid):
     Output('elat-bar', 'figure'),
     Input('ssid-menu', 'value'))
 def update_figure(selected_ssid):
-    points = pd.read_csv('/app/track_points.csv')
+    conn = sqlite3.connect('data.db')
+    points = pd.read_sql('SELECT * FROM data', conn) 
+    conn.close()
     filtered_points = points.drop(points[points.ssid != selected_ssid].index)
     fig = go.Figure(data=go.Bar(y=filtered_points.groupby('elat')['elat'].count(), x=sorted(filtered_points['elat'].unique()), width=0.8))
     fig.update_layout(title_text='Error Latitude')
@@ -168,7 +180,9 @@ def update_figure(selected_ssid):
     Output('elon-bar', 'figure'),
     Input('ssid-menu', 'value'))
 def update_figure(selected_ssid):
-    points = pd.read_csv('/app/track_points.csv')
+    conn = sqlite3.connect('data.db')
+    points = pd.read_sql('SELECT * FROM data', conn) 
+    conn.close()
     filtered_points = points.drop(points[points.ssid != selected_ssid].index)
     fig = go.Figure(data=go.Bar(y=filtered_points.groupby('elon')['elon'].count(), x=sorted(filtered_points['elon'].unique()), width=0.8))
     fig.update_layout(title_text='Error Longitude')
@@ -179,7 +193,9 @@ def update_figure(selected_ssid):
     Output('ip-menu', 'options'),
     Input('update-button-state', 'n_clicks'))
 def update_ip_menu(n_clicks):
-    data = pd.read_csv('/app/track_points.csv')
+    conn = sqlite3.connect('data.db')
+    data = pd.read_sql('SELECT * FROM data', conn) 
+    conn.close()
     return data['ip'].unique().tolist()
 
 

@@ -3,6 +3,8 @@ import numpy
 import time
 import os
 import random
+import sqlite3
+import pandas as pd 
 
 from gpsdclient import GPSDClient
 
@@ -11,8 +13,12 @@ random.seed(1)
 
 wifiInterfaceName = os.environ["WIFI_INTERFACE_NAME"]
 
-outputArray = numpy.genfromtxt('/app/data/data.csv', delimiter=",", dtype="str")
 
+conn = sqlite3.connect('/app/data/data.db')
+conn.execute('CREATE TABLE IF NOT EXISTS data (ip TEXT, channel INTEGER, strength INTEGER, ssid TEXT, time TEXT, lat REAL, lon REAL, elat REAL, elon REAL, beacon INTEGER)')
+
+#outputArray = numpy.genfromtxt('/app/data/data.csv', delimiter=",", dtype="str")
+outputArray = numpy.array(pd.read_sql('SELECT * FROM data', conn)) 
 
 last_run_time = time.time()
 
@@ -91,3 +97,20 @@ with GPSDClient() as client:
 
 
         numpy.savetxt("/app/data/data.csv", outputArray, fmt='%1s', delimiter=",")
+
+        df = pd.DataFrame(outputArray, columns=['ip','channel','strength','ssid','time','lat','lon','elat','elon','beacon'])
+        conn = sqlite3.connect('/app/data/data.db')
+        df.to_sql('data', conn, if_exists='replace', index=False)
+
+        cursor = conn.cursor() 
+        cursor.execute("SELECT * FROM data") 
+        rows = cursor.fetchall() 
+        for row in rows: 
+            print(row) 
+
+
+
+
+        
+conn.close()
+

@@ -7,8 +7,6 @@ filtered_points['strength'] = filtered_points['strength'].apply(lambda x: (math.
 
 ## Todo
 
-1. Add more Stuff to the data
-2. Convert data from .csv to sql
 3. Somehow visulize the inaccuracies (try boxing)
 
 
