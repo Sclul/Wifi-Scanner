@@ -7,7 +7,8 @@ filtered_points['strength'] = filtered_points['strength'].apply(lambda x: (math.
 
 ## Todo
 
-3. Somehow visulize the inaccuracies (try boxing)
+3. Visulize GPS-Errors via boxing
+4. Make a 2D histogramm for inaccuracies
 
 
 ##  Starting GNSS
