@@ -25,7 +25,8 @@ services:
     ports:
       - 8050:8050
     volumes:
-      - /home/jonas/project/Wifi-Scanner/data/dataTest2.csv:/app/track_points.csv:rw #set path of folder data
+      - /home/jonas/project/Wifi-Scanner/data/dataTest2.csv:/app/track_points.csv:rw
+      - /home/jonas/project/Wifi-Scanner/data/data.db:/app/data.db:rw #set path of folder data
     stop_grace_period: 1s
     labels:
       - 'test'
