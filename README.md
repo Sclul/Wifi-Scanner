@@ -8,7 +8,7 @@ filtered_points['strength'] = filtered_points['strength'].apply(lambda x: (math.
 ## Todo
 
 5. Fix Foreground/Background Issues with Error Map
-6. Add color scale to error map (put add_traces in foreground)
+
 
 
 ##  Starting GNSS
