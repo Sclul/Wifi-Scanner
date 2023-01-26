@@ -2,13 +2,12 @@
 
 Progress in work.
 
-Formula for Distance of the AP in an open field converted to GPS-coordinates (that are accurate enough in Berlin)
-filtered_points['strength'] = filtered_points['strength'].apply(lambda x: (math.pow(10, ((27.55 - (20 * math.log10(2440)) + math.fabs(x))/ 20.0)))*0.00001466666)
 
-## Todo
 
-5. Fix Foreground/Background Issues with Error Map
-
+## Configuration
+1. Edit the three rows in docker-compose according to their comments
+2. docker-compose up
+3. Live on Port 8050, Maps on Port 8051 
 
 
 ##  Starting GNSS

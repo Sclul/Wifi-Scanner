@@ -2,9 +2,12 @@ import plotly.graph_objects as go # or plotly.express as px
 import sqlite3
 import pandas as pd
 import math
+import os
 
 latfac = 0.000009
 lonfac = 0.00001466
+
+ssid = os.environ["SSID_NAME"]
 
 def binlat (lat, error):
     error_degree = error * latfac
@@ -35,10 +38,10 @@ def binlon1 (lon, strength):
 
 
 
-conn = sqlite3.connect('data.db')
+conn = sqlite3.connect('./data/data.db')
 points = pd.read_sql('SELECT * FROM data', conn) 
 conn.close()
-filtered_points = points.drop(points[points.ssid != '2Girls1Router'].index)
+filtered_points = points.drop(points[points.ssid != ssid].index)
 
 ####################################
 
@@ -108,8 +111,8 @@ fig1.update_layout(
 
 
     height=1000,
-    margin = {'l':0, 'r':100, 'b':0, 't':0})
-
+    margin = {'l':0, 'r':150, 'b':0, 't':50})
+fig1.update_layout(title_text='GNSS Error Range of ' + ssid)
 ##################################
 
 fig2 = go.Figure()
@@ -139,8 +142,9 @@ fig2.update_layout(
 
 
     height=1000,
-    margin = {'l':0, 'r':100, 'b':0, 't':0})
+    margin = {'l':0, 'r':150, 'b':0, 't':50})
 
+fig2.update_layout(title_text='Range Approximation of ' + ssid)
 
 
 
