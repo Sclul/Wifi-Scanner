@@ -13,5 +13,5 @@ Progress in work.
 ##  Starting GNSS
 1. sudo apt install gpsd
 2. sudo su
-3. sudo systemctl stop gpsd.socket 
+3. sudo     
 4. gpsd -D 5 -N -n /dev/ttyUSB0
