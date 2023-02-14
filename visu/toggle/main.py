@@ -1,10 +1,27 @@
 
+# The code creates a Dash app that displays two tabs with different graphs and data. 
+# The first function, app.layout, creates the two tabs for the app and assigns each to a different value ('tab-1' and 'tab-2'). It also creates a Div for each of the tabs which will later be populated with HTML code.
+# The second function, render_content, is a callback which is used to render the content of the tabs when they are clicked. It takes the value of the tab as an input and returns the HTML code which will be displayed in the tab. 
+# The third function, update_ssid_menu, is also a callback and it is used to update the dropdown menu in the first tab with the SSIDs available in the database.
+# The fourth function, update_figure, is used to update the heatmap in the first tab with the data corresponding to the selected SSID. It takes the selected SSID as an input and returns a figure containing the heatmap.
+# The fifth function, update_channel_bar, is used to update the channel bar chart in the first tab with the data corresponding to the selected SSID. It takes the selected SSID as an input and returns a figure containing the bar chart.
+# The sixth function, update_signal_bar, is used to update the signal bar chart in the first tab with the data corresponding to the selected SSID. It takes the selected SSID as an input and returns a figure containing the bar chart.
+# The seventh function, update_beacon_bar, is used to update the beacon bar chart in the first tab with the data corresponding to the selected SSID. It takes the selected SSID as an input and returns a figure containing the bar chart.
+# The eighth function, update_error_histogram, is used to update the error histogram in the first tab with the data corresponding to the selected SSID. It takes the selected SSID as an input and returns a figure containing the histogram.
+# The ninth function, update_ip_menu, is similar to the update_ssid_menu function but is used to update the dropdown menu in the second tab with the IPs available in the database.
+# The tenth function, update_ip_figure, is used to update the heatmap in the second tab with the data corresponding to the selected IP. It takes the selected IP as an input and returns a figure containing the heatmap.
+# The eleventh function, update_ip_channel_bar, is used to update the channel bar chart in the second tab with the data corresponding to the selected IP. It takes the selected IP as an input and returns a figure containing the bar chart.
+# The twelfth function, update_ip_signal_bar, is used to update the signal bar chart in the second tab with the data corresponding to the selected IP. It takes the selected IP as an input and returns a figure containing the bar chart.
+# The thirteenth function, update_ip_beacon_bar, is used to update the beacon bar chart in the second tab with the data corresponding to the selected IP. It takes the selected IP as an input and returns a figure containing the bar chart.
+# The fourteenth function, update_ip_error_histogram, is used to update the error histogram in the second tab with the data corresponding to the selected IP. It takes the selected IP as an input and returns a figure containing the histogram.
+# Finally, the last function, app.run_server, is used to run the Dash app on a local server.
+
+
 from dash import Dash, dcc, html, Input, Output
 import dash_daq as daq
 import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd
-import math
 import sqlite3
 
 
@@ -19,7 +36,7 @@ print('start')
 
 
 
-
+#Create Tab 1 and Tab2
 app.layout = html.Div([
     dcc.Tabs(
         id="tabs-with-classes",
@@ -43,7 +60,7 @@ app.layout = html.Div([
     html.Div(id='tabs-content-classes')
 ])
 
-
+#Fill Tab 1 and Tab 2 with HTML
 @app.callback(Output('tabs-content-classes', 'children'),
               Input('tabs-with-classes', 'value'))
 def render_content(tab):
@@ -155,7 +172,8 @@ def update_figure(selected_ssid):
     conn = sqlite3.connect('./data/data.db')
     points = pd.read_sql('SELECT * FROM data', conn)
     conn.close() 
-    filtered_points = points.drop(points[points.ssid != selected_ssid].index)
+    if selected_ssid != '':
+        filtered_points = points.drop(points[points.ssid != selected_ssid].index)
     fig = go.Figure(go.Densitymapbox(lat=filtered_points.lat, lon=filtered_points.lon, z=filtered_points.strength,radius=10))
     fig.update_geos(fitbounds="locations")
     fig.update_layout(mapbox_style="open-street-map", mapbox_center_lat=52.5156451, mapbox_center_lon=13.3256412, mapbox_zoom=16)
@@ -306,7 +324,7 @@ def update_figure(selected_ssid):
 
 
 
-
+#Run webpage
 
 if __name__ == '__main__':
     app.run_server(host='0.0.0.0',debug=True, port=8050)

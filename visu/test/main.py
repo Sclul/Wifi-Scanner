@@ -1,4 +1,12 @@
-import plotly.graph_objects as go # or plotly.express as px
+# This code creates 2 figures for visualizing the data from the database. The first figure is a rectangle which shows the GPS inaccuracy of the data points, and the second figure is a circle which shows the approximate range of the access point. 
+# The code first connects to the database and reads the data from it. Then it filters the data to only include the data points from the access point of interest. 
+# After that, the code prepares the data by creating 3 lists of lats and lons corresponding to the 3 levels of signal strength. The first list is for values above two thirds of the maximum value, the second list is for values above one third of the maximum value, and the third list is for values above the minimum value. 
+# Then, the code creates the first figure by adding the 3 traces of lats and lons to the figure. The color of the trace depends on the level of signal strength. The figure is then updated with a mapbox layout with the center being the center of the TU Campus. 
+# The second figure is created in the same way. The difference is that instead of rectangles, circles are created using trigonometric functions. The circles are then added to the figure which is then updated with the same mapbox layout. 
+# Finally, the figures are added to a dash app which is then run on a server.
+
+
+import plotly.graph_objects as go 
 import sqlite3
 import pandas as pd
 import math
@@ -9,6 +17,10 @@ lonfac = 0.00001466
 
 ssid = os.environ["SSID_NAME"]
 
+
+#Those function convert a GPS-coordinate and a range in meter to a bunch of GPS-coordinates that form a rectangle or a circle
+
+#Makes rectangle for GPS-inaccuracies
 def binlat (lat, error):
     error_degree = error * latfac
     list = [lat+error_degree, lat+error_degree, lat-error_degree, lat-error_degree, lat+error_degree, None]
@@ -19,7 +31,7 @@ def binlon (lon, error):
     list = [lon+error_degree, lon-error_degree, lon-error_degree, lon+error_degree, lon+error_degree, None]
     return list
 
-
+#Makes circle for AP-Location approximation works in theory on a soccer pitch
 def binlat1 (lat, strength):
     strenght_degree = math.pow(10, ((27.55 - (20 * math.log10(2440)) + math.fabs(strength))/ 20.0))*latfac
     y_coord = []
@@ -37,7 +49,7 @@ def binlon1 (lon, strength):
     return x_coord
 
 
-
+#Connects to database
 conn = sqlite3.connect('./data/data.db')
 points = pd.read_sql('SELECT * FROM data', conn) 
 conn.close()
@@ -45,9 +57,8 @@ filtered_points = points.drop(points[points.ssid != ssid].index)
 
 ####################################
 
+#Preperations
 fig1 = go.Figure()
-
-print('test')
 
 value_max = filtered_points['strength'].max()
 value_min = filtered_points['strength'].min()
@@ -115,11 +126,13 @@ fig1.update_layout(
 fig1.update_layout(title_text='GNSS Error Range of ' + ssid)
 ##################################
 
+#Range approximation
 fig2 = go.Figure()
 
 lat11 = []
 lon11 = []
 
+#Makes the circels 
 for row in filtered_points.iterrows():
     if row[1]['lat'] != 'n/a':
         lat11 = lat11+binlat1(float(row[1]['lat']),float(row[1]['strength'])) 
@@ -131,7 +144,7 @@ fig2.add_trace(go.Scattermapbox(
         lat = lat11,
         mode = 'lines',
         line = dict(color = 'blue', width = 2),
-        opacity=0.5
+        opacity=0.05
     ))
 
 fig2.update_layout(
@@ -151,7 +164,7 @@ fig2.update_layout(title_text='Range Approximation of ' + ssid)
 
 
 
-
+#Webapp
 
 import dash
 import dash_core_components as dcc
