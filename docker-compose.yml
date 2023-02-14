@@ -7,7 +7,7 @@ services:
       - data:/app/data:rw 
     stop_grace_period: 1s
     labels:
-      - 'toggle'
+      - 'live'
     
   visu_test:
     build: ./visu/test
@@ -17,11 +17,9 @@ services:
       - data:/app/data:rw 
     stop_grace_period: 1s
     environment:
-      -  SSID_NAME=KabelBox-CC34 #Set SSID of AP
+      -  SSID_NAME=LAA-Coexistence Experiment #Set SSID of AP
     labels:
-      - 'test'
-
-
+      - 'map'
 
 
   scanner:

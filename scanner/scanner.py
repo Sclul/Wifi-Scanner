@@ -1,3 +1,19 @@
+# The code function shown above is used to scan for nearby wireless access points (APs) and store the data into a SQLite database.
+
+# The first function establishes a connection to the database and creates a table if it does not already exist. It then stores the data from the table in an output array.
+
+# The next function uses the GPSDClient library to get the current GPS coordinates. It also stores the current time in seconds.
+
+# The third function uses the subprocess library to run the “iwlist” command on the specified wireless interface. This command lists all of the nearby APs. The output is then split into separate lines and stored in a data array.
+
+# The fourth function iterates through the data array to find the IP address, channel, signal strength, and SSID of each AP. It then stores this information in an ap array. It also stores the current timestamp and the current GPS coordinates.
+
+# The fifth function combines the ap array and the output array into one array and stores it in the database.
+
+# The sixth and final function prints the output from the database to the console.
+
+
+
 import subprocess
 import numpy
 import time
@@ -13,11 +29,9 @@ random.seed(1)
 
 wifiInterfaceName = os.environ["WIFI_INTERFACE_NAME"]
 
-
+#Connect to database
 conn = sqlite3.connect('/app/data/data.db')
 conn.execute('CREATE TABLE IF NOT EXISTS data (ip TEXT, channel INTEGER, strength INTEGER, ssid TEXT, time TEXT, lat REAL, lon REAL, elat REAL, elon REAL, beacon INTEGER)')
-
-#outputArray = numpy.genfromtxt('/app/data/data.csv', delimiter=",", dtype="str")
 outputArray = numpy.array(pd.read_sql('SELECT * FROM data', conn)) 
 
 last_run_time = time.time()
@@ -25,7 +39,7 @@ last_run_time = time.time()
 
 with GPSDClient() as client:
 
-
+    #Gets GPS-Data
     for result in client.dict_stream(convert_datetime=True, filter=["TPV"]):
 
         current_time = time.time() # Get the current time in seconds
@@ -92,16 +106,16 @@ with GPSDClient() as client:
 
 
 
+        # Puts the row into the array
+        outputArray=numpy.vstack([outputArray, nap]) 
 
-        outputArray=numpy.vstack([outputArray, nap]) #super inefficient
-
-
-        numpy.savetxt("/app/data/data.csv", outputArray, fmt='%1s', delimiter=",")
-
+        #Makes Array into a dataframe and adds it to the database
         df = pd.DataFrame(outputArray, columns=['ip','channel','strength','ssid','time','lat','lon','elat','elon','beacon'])
         conn = sqlite3.connect('/app/data/data.db')
         df.to_sql('data', conn, if_exists='replace', index=False)
 
+
+        #Prints output to console
         cursor = conn.cursor() 
         cursor.execute("SELECT * FROM data") 
         rows = cursor.fetchall() 
