@@ -1,5 +1,5 @@
 # Wifi-Scanner
-Install docker as well as docker-compose before hand.
+Install both docker and docker-compose beforehand.
 ##  Starting GNSS
 1. sudo apt install gpsd
 2. sudo su
