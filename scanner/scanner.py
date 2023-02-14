@@ -1,15 +1,9 @@
 # The code function shown above is used to scan for nearby wireless access points (APs) and store the data into a SQLite database.
-
 # The first function establishes a connection to the database and creates a table if it does not already exist. It then stores the data from the table in an output array.
-
 # The next function uses the GPSDClient library to get the current GPS coordinates. It also stores the current time in seconds.
-
 # The third function uses the subprocess library to run the “iwlist” command on the specified wireless interface. This command lists all of the nearby APs. The output is then split into separate lines and stored in a data array.
-
 # The fourth function iterates through the data array to find the IP address, channel, signal strength, and SSID of each AP. It then stores this information in an ap array. It also stores the current timestamp and the current GPS coordinates.
-
 # The fifth function combines the ap array and the output array into one array and stores it in the database.
-
 # The sixth and final function prints the output from the database to the console.
 
 
